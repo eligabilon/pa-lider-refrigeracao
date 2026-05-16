@@ -196,10 +196,10 @@ watch(() => formData.value.discountValue, (newVal) => {
 })
 
 const discountAlertClass = computed(() => {
-  if (formData.value.discountPercent >= siteSettings.value.maxDiscountDanger) {
+  if (formData.value.discountPercent >= (settings.value.maxDiscountDanger || 15)) {
     return 'bg-red-500 text-white ring-4 ring-red-500/30'
   }
-  if (formData.value.discountPercent >= siteSettings.value.maxDiscountWarning) {
+  if (formData.value.discountPercent >= (settings.value.maxDiscountWarning || 10)) {
     return 'bg-amber-500 text-white ring-4 ring-amber-500/30'
   }
   return 'bg-blue-800 dark:bg-blue-900 text-white'

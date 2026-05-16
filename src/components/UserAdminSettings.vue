@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { 
-  Shield, UserPlus, Trash2, X, Briefcase, Plus, Save, Edit2, Eye, Camera, KeyRound, User
+  Shield, UserPlus, Trash2, X, Briefcase, Plus, Save, Edit2, Eye, Camera, KeyRound, User, Route
 } from 'lucide-vue-next'
 import { useAuthStore, type UserProfile, type RolePermissions, type FinanceSubPerms, DEFAULT_FINANCE_SUB_PERMS, type TrechoSubPerms, DEFAULT_TRECHO_SUB_PERMS } from '../stores/auth'
 import { useAuditStore } from '../stores/audit'
@@ -266,7 +266,7 @@ const deleteUser = async (id: string) => {
       <div class="flex flex-wrap gap-2">
         <div v-for="role in roles" :key="role" class="px-4 py-1.5 bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded-full font-black text-xs flex items-center gap-2 border border-blue-100 dark:border-slate-700">
           {{ role }}
-          <button v-if="role !== 'ADMIN'" @click="roles = roles.filter(r => r !== role); saveRoles()" class="hover:text-red-500"><X :size="14" /></button>
+          <button v-if="role !== 'ADMIN'" @click="roles = roles.filter(r => r !== role)" class="hover:text-red-500"><X :size="14" /></button>
         </div>
       </div>
     </div>

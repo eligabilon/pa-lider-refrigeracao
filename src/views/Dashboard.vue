@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useInventoryStore } from '../stores/inventory'
@@ -31,6 +32,7 @@ const inventoryStore = useInventoryStore()
 const orderStore = useOrderStore()
 const financeStore = useFinanceStore()
 const settingsStore = useSettingsStore()
+const { settings } = storeToRefs(settingsStore)
 
 
 const currentTab = ref('dashboard')
@@ -41,6 +43,11 @@ const goalSettings = ref({
   type: 'valor',
   target: 5000
 })
+
+const syncGoalSettings = () => {
+  goalSettings.value.type = settings.value.goalType || 'valor'
+  goalSettings.value.target = Number(settings.value.goalTarget) || 5000
+}
 
 const FULL_PERMISSIONS = {
   estoque: { view: true, edit: true, delete: true },
@@ -192,11 +199,8 @@ onMounted(async () => {
     console.error('Erro ao carregar equipe técnica:', err)
   }
 
-  const settingsData = await settingsStore.loadSettings()
-  if (settingsData) {
-    goalSettings.value.type = settingsData.goalType || 'valor'
-    goalSettings.value.target = Number(settingsData.goalTarget) || 5000
-  }
+  await settingsStore.loadSettings()
+  syncGoalSettings()
 
 
   await Promise.all([
@@ -229,11 +233,7 @@ const logout = () => {
 // Recarrega configurações sempre que voltar para a aba dashboard
 watch(currentTab, (newTab) => {
   if (newTab === 'dashboard') {
-    const s = settingsStore.settings
-    if (s) {
-      goalSettings.value.type = s.goalType || 'valor'
-      goalSettings.value.target = s.goalTarget || 5000
-    }
+    syncGoalSettings()
   }
 })
 

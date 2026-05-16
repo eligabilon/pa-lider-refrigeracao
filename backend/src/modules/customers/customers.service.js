@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const getCustomers = async () => {
   const [rows] = await db.execute('SELECT * FROM customers ORDER BY created_at DESC');
@@ -7,7 +7,7 @@ const getCustomers = async () => {
 };
 
 const addCustomer = async (customerData) => {
-  const id = uuidv4();
+  const id = randomUUID();
   const { name, document, phone, email, plate, vehicleModel, equipBrand, equipModel } = customerData;
   
   await db.execute(

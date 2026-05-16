@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const getLogs = async () => {
   const [rows] = await db.execute('SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 2000');
@@ -7,7 +7,7 @@ const getLogs = async () => {
 };
 
 const addLog = async (logData) => {
-  const id = logData.id || uuidv4();
+  const id = logData.id || randomUUID();
   const { user, action, module, details, timestamp } = logData;
   
   await db.execute(

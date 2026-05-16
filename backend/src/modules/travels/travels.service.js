@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 // Trips (Real journeys)
 const getTrips = async () => {
@@ -13,7 +13,7 @@ const getActiveTrip = async () => {
 };
 
 const createTrip = async (tripData) => {
-  const id = uuidv4();
+  const id = randomUUID();
   const { status, origem, destino, placa, km_inicial, distancia, eventos, user_name } = tripData;
   
   await db.execute(
@@ -61,7 +61,7 @@ const getSimulations = async () => {
 };
 
 const createSimulation = async (simData) => {
-  const id = uuidv4();
+  const id = randomUUID();
   const { 
     origem, destino, distancia_km, duracao_min, consumo, preco_diesel, 
     custo_combustivel, total_pedagios, valor_frete, custo_total, lucro, margem, custo_por_km, user_name 

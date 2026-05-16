@@ -14,7 +14,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_public"
-      - "traefik.http.routers.liderrefrigeracao-prod.rule=Host(`liderrefrigeracao.com.br`)"
+      - "traefik.http.routers.liderrefrigeracao-prod.rule=Host(`oficinaliderrefrigeracao.com.br`)"
       - "traefik.http.routers.liderrefrigeracao-prod.entrypoints=websecure"
       - "traefik.http.routers.liderrefrigeracao-prod.tls=true"
       - "traefik.http.routers.liderrefrigeracao-prod.tls.certresolver=le"

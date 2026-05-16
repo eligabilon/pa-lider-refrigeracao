@@ -40,6 +40,12 @@ jobs:
             git pull origin "$BRANCH"
 
             echo "${{ secrets.ENV_PROD }}" > backend/.env
+            cat <<'EOF' >> backend/.env
+            RATE_LIMIT_WINDOW_MS=900000
+            RATE_LIMIT_MAX=5000
+            USER_RATE_LIMIT_MAX=10000
+            TRUST_PROXY_HOPS=1
+            EOF
 
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml build --pull --no-cache

@@ -1,13 +1,6 @@
 import { apiFetch } from '../utils/api'
 
 export interface SiteSettings {
-  banners: any[];
-  specialties: any[];
-  carouselDelay: number;
-  goalType: string;
-  goalTarget: number;
-  maxDiscountWarning?: number;
-  maxDiscountDanger?: number;
   companyName?: string;
   whatsapp?: string;
   email?: string;
@@ -24,6 +17,14 @@ export interface SiteSettings {
   aboutDescription?: string;
   aboutImage?: string;
   loginBackground?: string;
+  siteUrl?: string;
+  banners: any[];
+  specialties: any[];
+  carouselDelay: number;
+  goalType: string;
+  goalTarget: number;
+  maxDiscountWarning?: number;
+  maxDiscountDanger?: number;
 }
 
 

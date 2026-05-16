@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { 
-  Shield, UserPlus, Trash2, X, Briefcase, Plus, Save, Edit2, Eye, Camera, KeyRound, User
+  Shield, UserPlus, Trash2, X, Briefcase, Plus, Save, Edit2, Eye, Camera, KeyRound, User, Route
 } from 'lucide-vue-next'
 import { useAuthStore, type UserProfile, type RolePermissions, type FinanceSubPerms, DEFAULT_FINANCE_SUB_PERMS, type TrechoSubPerms, DEFAULT_TRECHO_SUB_PERMS } from '../stores/auth'
 import { useAuditStore } from '../stores/audit'

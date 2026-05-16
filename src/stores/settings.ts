@@ -25,6 +25,7 @@ export const useSettingsStore = defineStore('settings', () => {
     aboutDescription: '',
     aboutImage: '',
     loginBackground: '',
+    siteUrl: '',
   })
 
   const isLoading = ref(false)

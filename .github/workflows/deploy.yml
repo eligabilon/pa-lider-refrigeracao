@@ -16,17 +16,23 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            # Navega até a pasta do projeto (ajuste o caminho se necessário)
+            # Garante que a pasta existe ou clona o projeto se estiver vazio
+            if [ ! -d "/var/www/liderRefrigeracao/.git" ]; then
+              sudo mkdir -p /var/www/liderRefrigeracao
+              sudo chown -R ${{ secrets.VPS_USER }}:${{ secrets.VPS_USER }} /var/www/liderRefrigeracao
+              git clone https://github.com/${{ github.repository }}.git /var/www/liderRefrigeracao
+            fi
+
             cd /var/www/liderRefrigeracao
             
-            # Puxa as alterações
+            # Puxa as alterações da branch selecionada
             git pull origin ${{ github.ref_name }}
             
-            # Cria o arquivo .env no backend a partir da secret
+            # Cria o arquivo .env no backend
             echo "${{ secrets.ENV_PROD }}" > backend/.env
             
-            # Reconstrói a imagem e sobe o container
+            # Sobe os containers (Build da imagem e deploy)
             docker compose -f docker-compose.prod.yml up -d --build
             
-            # Limpa imagens antigas (opcional, para economizar espaço)
+            # Limpa imagens não utilizadas
             docker image prune -f

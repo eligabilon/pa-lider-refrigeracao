@@ -32,7 +32,7 @@
             <input 
               v-model="identifier"
               type="text"
-              placeholder="Usuário ou E-mail"
+              placeholder="user"
               class="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-800 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-950 dark:text-white transition"
               required
             />
@@ -43,7 +43,7 @@
             <input 
               v-model="password"
               type="password"
-              placeholder="Senha"
+              placeholder="****"
               class="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-800 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white dark:bg-slate-950 dark:text-white transition"
               required
             />
@@ -89,8 +89,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 const settingsStore = useSettingsStore()
 
-const identifier = ref('admin')
-const password = ref('1234')
+const identifier = ref('')
+const password = ref('')
 const isLoading = ref(false)
 const error = ref('')
 const loginBg = computed(() => settingsStore.settings.loginBackground || 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80')

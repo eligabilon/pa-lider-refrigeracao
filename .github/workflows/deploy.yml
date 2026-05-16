@@ -1,9 +1,7 @@
 name: Deploy to Production
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -21,7 +19,7 @@ jobs:
             cd /var/www/liderRefrigeracao
             
             # Puxa as alterações
-            git pull origin main
+            git pull origin ${{ github.ref_name }}
             
             # Cria o arquivo .env no backend a partir da secret
             echo "${{ secrets.ENV_PROD }}" > backend/.env

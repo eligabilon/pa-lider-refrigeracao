@@ -674,7 +674,7 @@ async function salvarSimulacao() {
     custo_total: custoTotal.value,
     lucro: analise.value?.lucro || 0,
     margem: analise.value?.margem || 0,
-    custo_por_km: analise.value?.custo_por_km || 0
+    custo_por_km: analise.value?.custoPorKm || 0
   }
   
   try {

@@ -266,7 +266,7 @@ const deleteUser = async (id: string) => {
       <div class="flex flex-wrap gap-2">
         <div v-for="role in roles" :key="role" class="px-4 py-1.5 bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-300 rounded-full font-black text-xs flex items-center gap-2 border border-blue-100 dark:border-slate-700">
           {{ role }}
-          <button v-if="role !== 'ADMIN'" @click="roles = roles.filter(r => r !== role); saveRoles()" class="hover:text-red-500"><X :size="14" /></button>
+          <button v-if="role !== 'ADMIN'" @click="roles = roles.filter(r => r !== role)" class="hover:text-red-500"><X :size="14" /></button>
         </div>
       </div>
     </div>

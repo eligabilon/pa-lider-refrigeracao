@@ -12,6 +12,7 @@ export interface Trip {
   km_final?: number | null
   distancia: number
   eventos: any[]
+  user_name?: string
   created_at: string
 }
 
@@ -31,6 +32,7 @@ export interface Simulation {
   lucro: number
   margem: number
   custo_por_km: number
+  user_name?: string
 }
 
 export class TravelService {

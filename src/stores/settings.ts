@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { SettingsService } from '../services/SettingsService'
+import { SettingsService, type SiteSettings } from '../services/SettingsService'
 
 export const useSettingsStore = defineStore('settings', () => {
-  const settings = ref({
+  const settings = ref<SiteSettings>({
     companyName: 'LIDER REFRIGERAÇÃO',
     whatsapp: '(11) 99999-9999',
     email: 'contato@liderefrigeracao.com.br',
+    banners: [],
+    specialties: [],
+    carouselDelay: 5000,
+    goalType: 'valor',
+    goalTarget: 5000,
     instagram: '',
     facebook: '',
     address: '',
@@ -20,9 +25,8 @@ export const useSettingsStore = defineStore('settings', () => {
     aboutDescription: '',
     aboutImage: '',
     loginBackground: '',
-    siteUrl: 'https://oficinaliderrefrigeracao.com.br'
   })
-  
+
   const isLoading = ref(false)
 
   const loadSettings = async () => {

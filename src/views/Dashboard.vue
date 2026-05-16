@@ -192,11 +192,10 @@ onMounted(async () => {
     console.error('Erro ao carregar equipe técnica:', err)
   }
 
-  const settingsData = await settingsStore.loadSettings()
-  if (settingsData) {
-    goalSettings.value.type = settingsData.goalType || 'valor'
-    goalSettings.value.target = Number(settingsData.goalTarget) || 5000
-  }
+  await settingsStore.loadSettings()
+  const s = settingsStore.settings
+  goalSettings.value.type = s.goalType || 'valor'
+  goalSettings.value.target = Number(s.goalTarget) || 5000
 
 
   await Promise.all([

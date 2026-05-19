@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: prod
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -15,18 +21,33 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
-            # Navega até a pasta do projeto (ajuste o caminho se necessário)
-            cd /var/www/liderRefrigeracao
-            
-            # Puxa as alterações
-            git pull origin main
-            
-            # Cria o arquivo .env no backend a partir da secret
+            set -e
+
+            APP_DIR="/var/www/liderRefrigeracao"
+            BRANCH="${{ github.ref_name }}"
+
+            if [ ! -d "$APP_DIR/.git" ]; then
+              sudo mkdir -p "$APP_DIR"
+              sudo chown -R ${{ secrets.VPS_USER }}:${{ secrets.VPS_USER }} "$APP_DIR"
+              git clone https://github.com/${{ github.repository }}.git "$APP_DIR"
+            fi
+
+            cd "$APP_DIR"
+            git fetch --all --prune
+            git checkout "$BRANCH"
+            git pull origin "$BRANCH"
+
             echo "${{ secrets.ENV_PROD }}" > backend/.env
-            
-            # Reconstrói a imagem e sobe o container
-            docker compose -f docker-compose.prod.yml up -d --build
-            
-            # Limpa imagens antigas (opcional, para economizar espaço)
+            cat <<'EOF' >> backend/.env
+            RATE_LIMIT_WINDOW_MS=300000
+            RATE_LIMIT_MAX=5000
+            USER_RATE_LIMIT_MAX=10000
+            TRUST_PROXY_HOPS=1
+            EOF
+
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml build --pull --no-cache
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
             docker image prune -f

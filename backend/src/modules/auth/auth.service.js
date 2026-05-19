@@ -88,8 +88,8 @@ const getAllUsers = async () => {
 };
 
 const createUser = async (userData) => {
-  const { v4: uuidv4 } = require('uuid');
-  const id = uuidv4();
+  const { randomUUID } = require('crypto');
+  const id = randomUUID();
   const { username, email, password, role, permissions, financeSubPerms, trechoSubPerms, avatarUrl } = userData;
   const { hashPassword } = require('../../utils/password');
   const hashedPassword = await hashPassword(password);

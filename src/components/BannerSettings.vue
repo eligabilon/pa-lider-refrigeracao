@@ -308,7 +308,7 @@ const removeBanner = (index: number) => {
 const removeSpecialty = (index: number) => {
   if (confirm('Deseja remover esta especialidade?')) {
     settings.value.specialties.splice(index, 1)
-    auditStore.addLog("Sistema", "REMOVEU", "Especialidade removida")
+    auditStore.addLog("Sistema", "EXCLUIU", "Especialidade removida")
   }
 }
 
@@ -334,7 +334,7 @@ const reorderSpecialty = (oldIndex: number, newPos: number) => {
 
   const item = settings.value.specialties.splice(oldIndex, 1)[0]
   settings.value.specialties.splice(targetIdx, 0, item)
-  auditStore.addLog("Sistema", "REORDENOU", `Especialidade movida da posição ${oldIndex + 1} para ${targetIdx + 1}`)
+  auditStore.addLog("Sistema", "EDITOU", `Especialidade movida da posição ${oldIndex + 1} para ${targetIdx + 1}`)
 }
 
 const save = async () => {

@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const getTransactions = async () => {
   const [rows] = await db.execute('SELECT * FROM transactions ORDER BY date DESC');
@@ -7,7 +7,7 @@ const getTransactions = async () => {
 };
 
 const addTransaction = async (trxData) => {
-  const id = uuidv4();
+  const id = randomUUID();
   const { type, description, amount, category, orderId } = trxData;
   
   await db.execute(

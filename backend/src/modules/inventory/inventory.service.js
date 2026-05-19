@@ -1,5 +1,5 @@
 const db = require('../../config/db');
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 
 const getParts = async () => {
   const [rows] = await db.execute('SELECT * FROM inventory_parts');
@@ -7,7 +7,7 @@ const getParts = async () => {
 };
 
 const addPart = async (partData) => {
-  const id = uuidv4();
+  const id = randomUUID();
   const { name, quantity } = partData;
   
   await db.execute(
@@ -53,7 +53,7 @@ const getMovements = async () => {
 };
 
 const addMovement = async (movementData) => {
-  const id = uuidv4();
+  const id = randomUUID();
   const { partName, type, quantity, user, note } = movementData;
   
   await db.execute(

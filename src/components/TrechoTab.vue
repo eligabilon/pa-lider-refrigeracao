@@ -674,7 +674,7 @@ async function salvarSimulacao() {
     custo_total: custoTotal.value,
     lucro: analise.value?.lucro || 0,
     margem: analise.value?.margem || 0,
-    custo_por_km: analise.value?.custo_por_km || 0
+    custo_por_km: analise.value?.custoPorKm || 0
   }
   
   try {
@@ -1426,7 +1426,7 @@ const fmtKm = (v: number) => v.toLocaleString('pt-BR', { minimumFractionDigits: 
                 <td class="p-4 text-xs font-bold text-gray-600 dark:text-gray-300">{{ new Date(s.data).toLocaleDateString('pt-BR') }}</td>
                 <td class="p-4 text-xs font-bold text-gray-900 dark:text-white">{{ s.origem }} <span class="text-gray-400 mx-1">→</span> {{ s.destino }}</td>
                 <td class="p-4 text-xs font-black text-red-600 text-right">R$ {{ fmt(s.custoTotal) }}</td>
-                <td class="p-4 text-xs font-black text-gray-900 dark:text-white text-right">{{ s.valorFrete ? `R$ ${fmt(s.valorFrete)}` : '-' }}</td>
+                <td class="p-4 text-xs font-black text-gray-900 dark:text-white text-right">{{ s.valor_frete ? `R$ ${fmt(s.valor_frete)}` : '-' }}</td>
                 <td class="p-4 text-xs font-black text-green-600 text-right">{{ s.lucro ? `R$ ${fmt(s.lucro)}` : '-' }}</td>
                 <td class="p-4"><span v-if="s.margem" :class="['px-2.5 py-1 rounded-lg text-[10px] font-black float-right', s.margem > 30 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700']">{{ s.margem.toFixed(1) }}%</span></td>
               </tr>

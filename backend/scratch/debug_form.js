@@ -6,7 +6,6 @@ let content = fs.readFileSync(filePath, 'utf8');
 
 const lines = content.split('\n');
 
-// Find ALL lines containing applyCase
 for (let i = 0; i < lines.length; i++) {
   if (lines[i].includes('applyCase') && lines[i].includes('item.description')) {
     console.log('Found at line', i+1, ':');

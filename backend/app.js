@@ -11,7 +11,14 @@ const app = express();
 
 app.set('trust proxy', parseInt(process.env.TRUST_PROXY_HOPS || '1', 10));
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+      "img-src": ["'self'", "data:", "https://api.qrserver.com"],
+    },
+  },
+}));
 app.use(cors({
   origin: process.env.CORS_ORIGIN || '*'
 }));

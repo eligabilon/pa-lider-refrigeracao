@@ -249,7 +249,7 @@ const handleExportExcel = () => {
               </div>
               <p class="font-black text-lg text-slate-800 dark:text-white">R$ {{ order.total.toFixed(2) }}</p>
             </div>
-            <div class="flex items-center justify-end gap-2 pt-2 border-t dark:border-slate-800">
+            <div class="flex items-center justify-end flex-wrap gap-2 pt-2 border-t dark:border-slate-800">
                <button @click="openDetails(order)" class="p-2.5 bg-gray-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-black uppercase flex items-center gap-2">
                  <Eye :size="14" /> Detalhes
                </button>

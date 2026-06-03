@@ -22,6 +22,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
+          timeout: 120s
+          command_timeout: 40m
           script: |
             set -e
 
@@ -35,9 +37,10 @@ jobs:
             fi
 
             cd "$APP_DIR"
-            git fetch --all --prune
-            git checkout "$BRANCH"
-            git pull origin "$BRANCH"
+            git fetch origin "$BRANCH" --prune
+            git checkout "$BRANCH" || git checkout -b "$BRANCH" "origin/$BRANCH"
+            git reset --hard "origin/$BRANCH"
+            git clean -fd
 
             echo "${{ secrets.ENV_PROD }}" > backend/.env
             cat <<'EOF' >> backend/.env

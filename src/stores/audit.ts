@@ -29,6 +29,10 @@ export const useAuditStore = defineStore('audit', () => {
     const authStore = useAuthStore()
     const currentUser = forcedUsername || authStore.user?.username || 'Sistema'
 
+    if (!authStore.token) {
+      return // Não salva log no backend se não houver sessão ativa (ex: leads públicos)
+    }
+
     const newLogData: Omit<AuditLog, 'id' | 'timestamp'> = {
       user: currentUser,
       action,

@@ -108,115 +108,156 @@ const buildPDFDoc = (order: any, settings: any, protocol?: string) => {
   doc.setDrawColor(240, 240, 240)
   doc.line(15, 42, 195, 42)
 
+  // --- OTIMIZAÇÃO AUTOMÁTICA DE ESPAÇO ---
+  const servicesCount = order.services ? order.services.length : 0;
+  const partsCount = order.parts ? order.parts.length : 0;
+  const totalItems = servicesCount + partsCount;
+  
+  const isCompact = totalItems > 6;
+  const isVeryCompact = totalItems > 12;
+
+  const card1H = isVeryCompact ? 26 : (isCompact ? 30 : 35);
+  const card2H = isVeryCompact ? 32 : (isCompact ? 38 : 45);
+  
+  const startYCard1 = isVeryCompact ? 44 : 48;
+  const gapBetweenCards = isVeryCompact ? 3 : (isCompact ? 4 : 5);
+  const startYCard2 = startYCard1 + card1H + gapBetweenCards;
+  
+  const gapBeforeTable = isVeryCompact ? 5 : (isCompact ? 7 : 9);
+  const tableTitleY = startYCard2 + card2H + gapBeforeTable;
+  const tableStartY = tableTitleY + (isVeryCompact ? 2 : 3);
+  
+  const boxH = isVeryCompact ? 40 : (isCompact ? 48 : 55);
+
   // --- CARDS ROW 1 (CLIENTE E VEÍCULO) ---
+  let cy1 = startYCard1;
   // Card Cliente
   doc.setFillColor(252, 252, 252)
-  doc.roundedRect(15, 48, 85, 35, 3, 3, "F")
+  doc.roundedRect(15, cy1, 85, card1H, 3, 3, "F")
   doc.setDrawColor(230, 230, 230)
-  doc.roundedRect(15, 48, 85, 35, 3, 3, "D")
+  doc.roundedRect(15, cy1, 85, card1H, 3, 3, "D")
   
   doc.setTextColor(26, 54, 93)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setFont("helvetica", "bold")
-  doc.text("DADOS DO CLIENTE", 20, 53)
+  doc.text("DADOS DO CLIENTE", 20, cy1 + 5)
   
   doc.setTextColor(0, 0, 0)
-  doc.setFontSize(11)
-  doc.text(safeText(order.clientName), 20, 61)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 10 : 11)
+  doc.text(safeText(order.clientName), 20, cy1 + (isVeryCompact ? 11 : (isCompact ? 12 : 13)))
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setFont("helvetica", "normal")
   doc.setTextColor(100, 100, 100)
-  doc.text(`Doc: ${order.document || 'N/A'}`, 20, 67)
-  doc.text(`Tel: ${order.phone || 'N/A'}`, 20, 72)
-  doc.text(`Email: ${order.email || 'N/A'}`, 20, 77)
+  const sp1 = isVeryCompact ? 4 : (isCompact ? 4.5 : 5);
+  let cY = cy1 + (isVeryCompact ? 11 : (isCompact ? 12 : 13)) + sp1 + 1;
+  doc.text(`Doc: ${order.document || 'N/A'}`, 20, cY)
+  cY += sp1;
+  doc.text(`Tel: ${order.phone || 'N/A'}`, 20, cY)
+  cY += sp1;
+  doc.text(`Email: ${order.email || 'N/A'}`, 20, cY)
 
   // Card Veículo
   doc.setFillColor(252, 252, 252)
-  doc.roundedRect(110, 48, 85, 35, 3, 3, "F")
+  doc.roundedRect(110, cy1, 85, card1H, 3, 3, "F")
   doc.setDrawColor(230, 230, 230)
-  doc.roundedRect(110, 48, 85, 35, 3, 3, "D")
+  doc.roundedRect(110, cy1, 85, card1H, 3, 3, "D")
 
   doc.setTextColor(26, 54, 93)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setFont("helvetica", "bold")
-  doc.text("VEÍCULO E EQUIPAMENTO", 115, 53)
+  doc.text("VEÍCULO E EQUIPAMENTO", 115, cy1 + 5)
 
   doc.setTextColor(0, 0, 0)
-  doc.setFontSize(11)
-  doc.text(safeText(order.plate), 115, 61)
-  doc.setFontSize(10)
+  doc.setFontSize(isVeryCompact ? 10 : 11)
+  doc.text(safeText(order.plate), 115, cy1 + (isVeryCompact ? 11 : (isCompact ? 12 : 13)))
+  doc.setFontSize(isVeryCompact ? 9 : 10)
   doc.setTextColor(59, 130, 246) // Azul claro
-  doc.text(safeText(order.vehicleModel), 115, 67)
+  let vY = cy1 + (isVeryCompact ? 11 : (isCompact ? 12 : 13)) + (isVeryCompact ? 4.5 : 6);
+  doc.text(safeText(order.vehicleModel), 115, vY)
   
-  doc.setFontSize(9)
+  vY += (isVeryCompact ? 4.5 : 6);
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setTextColor(100, 100, 100)
   doc.setFont("helvetica", "bold")
-  doc.text("EQUIPAMENTO", 115, 73)
+  doc.text("EQUIPAMENTO", 115, vY)
   doc.setFont("helvetica", "normal")
-  doc.text(safeText(`${order.equipBrand || ''} ${order.equipModel || ''}`), 115, 78)
+  vY += (isVeryCompact ? 4 : 5);
+  doc.text(safeText(`${order.equipBrand || ''} ${order.equipModel || ''}`), 115, vY)
 
   // --- CARDS ROW 2 (DIAGNÓSTICO E CRONOGRAMA) ---
+  let cy2 = startYCard2;
   // Card Diagnóstico
   doc.setFillColor(252, 252, 252)
-  doc.roundedRect(15, 88, 85, 45, 3, 3, "F")
+  doc.roundedRect(15, cy2, 85, card2H, 3, 3, "F")
   doc.setDrawColor(230, 230, 230)
-  doc.roundedRect(15, 88, 85, 45, 3, 3, "D")
+  doc.roundedRect(15, cy2, 85, card2H, 3, 3, "D")
 
   doc.setTextColor(26, 54, 93)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setFont("helvetica", "bold")
-  doc.text("DIAGNÓSTICO TÉCNICO", 20, 93)
+  doc.text("DIAGNÓSTICO TÉCNICO", 20, cy2 + 5)
 
-  doc.setFontSize(8)
+  doc.setFontSize(isVeryCompact ? 7 : 8)
   doc.setTextColor(59, 130, 246)
-  doc.text("PROBLEMA RELATADO", 20, 99)
+  let dY = cy2 + (isVeryCompact ? 9 : 11);
+  doc.text("PROBLEMA RELATADO", 20, dY)
   doc.setTextColor(80, 80, 80)
   doc.setFont("helvetica", "normal")
+  dY += (isVeryCompact ? 3.5 : 4);
   const problemText = doc.splitTextToSize(order.problem || "N/A", 75)
-  doc.text(problemText, 20, 103)
+  const probLines = isVeryCompact && problemText.length > 2 ? problemText.slice(0, 2) : problemText;
+  doc.text(probLines, 20, dY)
 
-  doc.setFontSize(8)
+  dY += (probLines.length * (isVeryCompact ? 3.5 : 4)) + (isVeryCompact ? 2 : 4);
+  doc.setFontSize(isVeryCompact ? 7 : 8)
   doc.setTextColor(59, 130, 246)
   doc.setFont("helvetica", "bold")
-  doc.text("DIAGNÓSTICO", 20, 115)
+  doc.text("DIAGNÓSTICO", 20, dY)
   doc.setTextColor(80, 80, 80)
   doc.setFont("helvetica", "normal")
+  dY += (isVeryCompact ? 3.5 : 4);
   const diagnosisText = doc.splitTextToSize(order.diagnosis || "N/A", 75)
-  doc.text(diagnosisText, 20, 119)
+  const diagLines = isVeryCompact && diagnosisText.length > 2 ? diagnosisText.slice(0, 2) : diagnosisText;
+  doc.text(diagLines, 20, dY)
 
   // Card Cronograma
   doc.setFillColor(252, 252, 252)
-  doc.roundedRect(110, 88, 85, 45, 3, 3, "F")
+  doc.roundedRect(110, cy2, 85, card2H, 3, 3, "F")
   doc.setDrawColor(230, 230, 230)
-  doc.roundedRect(110, 88, 85, 45, 3, 3, "D")
+  doc.roundedRect(110, cy2, 85, card2H, 3, 3, "D")
 
   doc.setTextColor(26, 54, 93)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setFont("helvetica", "bold")
-  doc.text("CRONOGRAMA PREVISTO", 115, 93)
+  doc.text("CRONOGRAMA PREVISTO", 115, cy2 + 5)
 
+  let cBoxH = isVeryCompact ? 9 : (isCompact ? 10 : 12);
+  let cYBox1 = cy2 + (isVeryCompact ? 7 : 10);
   doc.setFillColor(255, 255, 255)
-  doc.roundedRect(115, 98, 75, 12, 2, 2, "F")
+  doc.roundedRect(115, cYBox1, 75, cBoxH, 2, 2, "F")
   doc.setDrawColor(245, 245, 245)
-  doc.roundedRect(115, 98, 75, 12, 2, 2, "D")
-  doc.setFontSize(8)
+  doc.roundedRect(115, cYBox1, 75, cBoxH, 2, 2, "D")
+  doc.setFontSize(isVeryCompact ? 7 : 8)
   doc.setTextColor(150, 150, 150)
-  doc.text("INÍCIO ESTIMADO", 118, 105)
+  let cTextY1 = cYBox1 + (cBoxH / 2) + 1;
+  doc.text("INÍCIO ESTIMADO", 118, cTextY1)
   doc.setTextColor(26, 54, 93)
   doc.setFont("helvetica", "bold")
-  doc.text(formatDateTime(order.startTime), 185, 105, { align: 'right' })
+  doc.text(formatDateTime(order.startTime), 185, cTextY1, { align: 'right' })
 
+  let cYBox2 = cYBox1 + cBoxH + (isVeryCompact ? 2 : 3);
   doc.setFillColor(255, 255, 255)
-  doc.roundedRect(115, 115, 75, 12, 2, 2, "F")
+  doc.roundedRect(115, cYBox2, 75, cBoxH, 2, 2, "F")
   doc.setDrawColor(245, 245, 245)
-  doc.roundedRect(115, 115, 75, 12, 2, 2, "D")
-  doc.setFontSize(8)
+  doc.roundedRect(115, cYBox2, 75, cBoxH, 2, 2, "D")
+  doc.setFontSize(isVeryCompact ? 7 : 8)
   doc.setTextColor(150, 150, 150)
   doc.setFont("helvetica", "normal")
-  doc.text("FIM ESTIMADO", 118, 122)
+  let cTextY2 = cYBox2 + (cBoxH / 2) + 1;
+  doc.text("FIM ESTIMADO", 118, cTextY2)
   doc.setTextColor(26, 54, 93)
   doc.setFont("helvetica", "bold")
-  doc.text(formatDateTime(order.endTime), 185, 122, { align: 'right' })
+  doc.text(formatDateTime(order.endTime), 185, cTextY2, { align: 'right' })
   
   // Duração Total
   if (order.startTime && order.endTime) {
@@ -226,19 +267,20 @@ const buildPDFDoc = (order: any, settings: any, protocol?: string) => {
       const diffTime = Math.abs(end.getTime() - start.getTime())
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1
       
+      let tagY = cYBox2 + cBoxH + (isVeryCompact ? 2 : 3);
       doc.setFillColor(59, 130, 246)
-      doc.roundedRect(165, 128, 30, 5, 1, 1, "F")
+      doc.roundedRect(165, tagY, 30, 5, 1, 1, "F")
       doc.setTextColor(255, 255, 255)
-      doc.setFontSize(7)
-      doc.text(`${diffDays} DIAS TOTAL`, 180, 131.5, { align: 'right' })
+      doc.setFontSize(isVeryCompact ? 6 : 7)
+      doc.text(`${diffDays} DIAS TOTAL`, 180, tagY + 3.5, { align: 'center' })
     } catch (e) {}
   }
 
 
   // --- TABELA DE ITENS ---
   doc.setTextColor(26, 54, 93)
-  doc.setFontSize(10)
-  doc.text("ITENS DO ORÇAMENTO", 15, 142)
+  doc.setFontSize(isVeryCompact ? 9 : 10)
+  doc.text("ITENS DO ORÇAMENTO", 15, tableTitleY)
 
   const services = order.services || []
   const parts = order.parts || []
@@ -249,17 +291,23 @@ const buildPDFDoc = (order: any, settings: any, protocol?: string) => {
 
   try {
     autoTable(doc, {
-      startY: 145,
+      startY: tableStartY,
       head: [["DESCRIÇÃO", "TIPO", "QTD", "UNITÁRIO", "SUBTOTAL"]],
       body: tableData,
       headStyles: { 
         fillColor: [245, 245, 245], // Cinza mais clarinho
         textColor: [0, 0, 0], // Preto para contraste no cinza
-        fontSize: 8, 
+        fontSize: isVeryCompact ? 7 : 8, 
         fontStyle: 'bold',
         halign: 'left'
       },
-      bodyStyles: { fontSize: 9, textColor: [0, 0, 0] },
+      bodyStyles: { 
+        fontSize: isVeryCompact ? 7 : (isCompact ? 8 : 9), 
+        textColor: [0, 0, 0] 
+      },
+      styles: {
+        cellPadding: isVeryCompact ? 1 : (isCompact ? 1.5 : 3),
+      },
       columnStyles: {
         0: { fontStyle: 'bold' },
         2: { halign: 'center' },
@@ -276,19 +324,19 @@ const buildPDFDoc = (order: any, settings: any, protocol?: string) => {
     })
   } catch (e) {
     console.error("Erro ao gerar tabela no PDF:", e)
-    doc.text("Erro ao carregar itens do orçamento.", 15, 150)
+    doc.text("Erro ao carregar itens do orçamento.", 15, tableStartY + 5)
   }
 
-  let finalY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 10 : 150
+  let finalY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + (isVeryCompact ? 4 : 10) : tableStartY + 5
   
-  if (finalY > 230) {
+  const pageHeight = doc.internal.pageSize.getHeight();
+  if (finalY + boxH > pageHeight - 10) {
     doc.addPage()
     finalY = 20
   }
 
   // --- SUMMARY BOX (BLUE) ---
   const boxW = 85
-  const boxH = 55
   const boxX = 110
   const boxY = finalY
 
@@ -296,39 +344,45 @@ const buildPDFDoc = (order: any, settings: any, protocol?: string) => {
   doc.roundedRect(boxX, boxY, boxW, boxH, 5, 5, "F")
   
   doc.setTextColor(200, 200, 200)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 8 : 9)
   doc.setFont("helvetica", "normal")
   
-  doc.text("Mão de Obra Total:", boxX + 5, boxY + 12)
-  doc.text(formatBRL(order.servicesValue), boxX + boxW - 5, boxY + 12, { align: 'right' })
+  let sY = boxY + (isVeryCompact ? 7 : (isCompact ? 9 : 12));
+  doc.text("Mão de Obra Total:", boxX + 5, sY)
+  doc.text(formatBRL(order.servicesValue), boxX + boxW - 5, sY, { align: 'right' })
   
-  doc.text("Peças Total:", boxX + 5, boxY + 20)
-  doc.text(formatBRL(order.partsValue), boxX + boxW - 5, boxY + 20, { align: 'right' })
+  sY += (isVeryCompact ? 6 : (isCompact ? 7 : 8));
+  doc.text("Peças Total:", boxX + 5, sY)
+  doc.text(formatBRL(order.partsValue), boxX + boxW - 5, sY, { align: 'right' })
   
-  doc.text("Deslocamento:", boxX + 5, boxY + 28)
-  doc.text(formatBRL(order.travelValue), boxX + boxW - 5, boxY + 28, { align: 'right' })
+  sY += (isVeryCompact ? 6 : (isCompact ? 7 : 8));
+  doc.text("Deslocamento:", boxX + 5, sY)
+  doc.text(formatBRL(order.travelValue), boxX + boxW - 5, sY, { align: 'right' })
   
+  sY += (isVeryCompact ? 4 : 6);
   doc.setDrawColor(255, 255, 255, 0.2)
-  doc.line(boxX + 5, boxY + 34, boxX + boxW - 5, boxY + 34)
+  doc.line(boxX + 5, sY, boxX + boxW - 5, sY)
   
+  sY += (isVeryCompact ? 6 : 8);
   doc.setTextColor(255, 255, 255)
-  doc.setFontSize(11)
+  doc.setFontSize(isVeryCompact ? 10 : 11)
   doc.setFont("helvetica", "bold")
-  doc.text("Subtotal:", boxX + 5, boxY + 42)
+  doc.text("Subtotal:", boxX + 5, sY)
   const subTotal = (order.servicesValue || 0) + (order.partsValue || 0) + (order.travelValue || 0)
-  doc.text(formatBRL(subTotal), boxX + boxW - 5, boxY + 42, { align: 'right' })
+  doc.text(formatBRL(subTotal), boxX + boxW - 5, sY, { align: 'right' })
 
+  sY += (isVeryCompact ? 6 : 8);
   doc.setTextColor(255, 215, 0) // Gold/Yellow
-  doc.setFontSize(16)
-  doc.text("TOTAL:", boxX + 5, boxY + 50)
-  doc.text(formatBRL(order.total), boxX + boxW - 5, boxY + 50, { align: 'right' })
+  doc.setFontSize(isVeryCompact ? 14 : 16)
+  doc.text("TOTAL:", boxX + 5, sY)
+  doc.text(formatBRL(order.total), boxX + boxW - 5, sY, { align: 'right' })
 
   // Info Final (Bottom Left)
   doc.setTextColor(100, 100, 100)
-  doc.setFontSize(9)
+  doc.setFontSize(isVeryCompact ? 7 : (isCompact ? 8 : 9))
   doc.setFont("helvetica", "normal")
-  doc.text(safeText(`Garantia: ${order.warranty || '90 dias'}`), 15, boxY + 12)
-  doc.text(safeText(`Técnico Responsável: ${order.technician || 'Admin'}`), 15, boxY + 20)
+  doc.text(safeText(`Garantia: ${order.warranty || '90 dias'}`), 15, boxY + (isVeryCompact ? 8 : 12))
+  doc.text(safeText(`Técnico Responsável: ${order.technician || 'Admin'}`), 15, boxY + (isVeryCompact ? 14 : 20))
 
   return doc
 }
@@ -448,12 +502,15 @@ export const generateViagemPDF = (viagem: any, settings?: any) => {
     doc.line(15, 143, 195, 143)
 
     const catData = Object.entries(viagem.despesasPorCategoria).map(([cat, valor]) => [cat, `R$ ${(valor as number).toFixed(2)}`])
+    const isCompact = catData.length > 8;
     
     autoTable(doc, {
       startY: 148,
       head: [["Categoria", "Valor Gasto"]],
       body: catData,
-      headStyles: { fillColor: [26, 54, 93], fontSize: 10 },
+      headStyles: { fillColor: [26, 54, 93], fontSize: isCompact ? 8 : 10 },
+      styles: { cellPadding: isCompact ? 1 : 3 },
+      bodyStyles: { fontSize: isCompact ? 8 : 10 },
       theme: "striped",
     })
   }
@@ -525,12 +582,15 @@ export const exportTableToPDF = (data: any[], fileName: string, title: string = 
   const headers = Object.keys(data[0])
   const bodyData = data.map(row => headers.map(h => row[h]))
 
+  const isCompact = bodyData.length > 20;
+
   autoTable(doc, {
     startY: 35,
     head: [headers],
     body: bodyData,
-    headStyles: { fillColor: [26, 54, 93], fontSize: 8 },
-    bodyStyles: { fontSize: 8 },
+    headStyles: { fillColor: [26, 54, 93], fontSize: isCompact ? 7 : 8 },
+    bodyStyles: { fontSize: isCompact ? 7 : 8 },
+    styles: { cellPadding: isCompact ? 1 : 3 },
     theme: "striped",
   })
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { 
-  FileText, Search, PlusCircle, CheckCircle2, History, Eye, Pencil, RotateCcw, Trash2
+  FileText, Search, PlusCircle, CheckCircle2, History, Eye, Pencil, RotateCcw, Trash2, Copy
 } from 'lucide-vue-next'
 import { useOrderStore } from '../stores/orders'
 import { useAuthStore } from '../stores/auth'
@@ -65,6 +65,28 @@ const handleOrderSaved = () => {
 
 const startEdit = (order: any) => {
   editingOrder.value = order
+  currentSubTab.value = 'novo'
+}
+
+const duplicateOrder = (order: any) => {
+  const clonedOrder = JSON.parse(JSON.stringify(order))
+  
+  delete clonedOrder.id
+  clonedOrder.status = 'Pendente'
+  clonedOrder.date = new Date().toISOString().split('T')[0]
+  delete clonedOrder.executedAt
+  delete clonedOrder.cancelledAt
+  delete clonedOrder.createdAt
+  delete clonedOrder.updatedAt
+
+  if (clonedOrder.services) {
+    clonedOrder.services = clonedOrder.services.map((s: any) => ({ ...s, id: Math.random().toString(36).substr(2, 9) }))
+  }
+  if (clonedOrder.parts) {
+    clonedOrder.parts = clonedOrder.parts.map((p: any) => ({ ...p, id: Math.random().toString(36).substr(2, 9) }))
+  }
+  
+  editingOrder.value = clonedOrder
   currentSubTab.value = 'novo'
 }
 
@@ -194,6 +216,9 @@ const handleExportExcel = () => {
                     <button @click="openDetails(order)" class="p-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all" title="Ver Detalhes">
                       <Eye :size="16" />
                     </button>
+                    <button v-if="authStore.hasPermission('orcamentos', 'edit')" @click="duplicateOrder(order)" class="p-3 bg-slate-100 dark:bg-slate-800 text-purple-600 dark:text-purple-400 rounded-xl hover:bg-purple-600 hover:text-white transition-all" title="Duplicar">
+                      <Copy :size="16" />
+                    </button>
                     <button v-if="authStore.hasPermission('orcamentos', 'edit')" @click="startEdit(order)" class="p-3 bg-slate-100 dark:bg-slate-800 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-600 hover:text-white transition-all" title="Editar">
                       <Pencil :size="16" />
                     </button>
@@ -252,6 +277,9 @@ const handleExportExcel = () => {
             <div class="flex items-center justify-end flex-wrap gap-2 pt-2 border-t dark:border-slate-800">
                <button @click="openDetails(order)" class="p-2.5 bg-gray-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl text-xs font-black uppercase flex items-center gap-2">
                  <Eye :size="14" /> Detalhes
+               </button>
+               <button v-if="authStore.hasPermission('orcamentos', 'edit')" @click="duplicateOrder(order)" class="p-2.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl text-xs font-black uppercase flex items-center gap-2">
+                 <Copy :size="14" /> Duplicar
                </button>
                <button v-if="authStore.hasPermission('orcamentos', 'edit')" @click="startEdit(order)" class="p-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-black uppercase flex items-center gap-2">
                  <Pencil :size="14" /> Editar

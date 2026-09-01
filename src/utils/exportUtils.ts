@@ -286,8 +286,8 @@ const buildPDFDoc = (order: any, settings: any, protocol?: string) => {
   const services = order.services || []
   const parts = order.parts || []
   const tableData = [
-    ...services.map((s: any) => [safeText(s.description), "Mão de Obra", safeText(s.qty || 1), formatBRL(s.value), formatBRL((s.qty || 1) * s.value)]),
     ...parts.map((p: any) => [safeText(p.name || p.description), "Peça / Insumo", safeText(p.quantity || p.qty), formatBRL(p.value), formatBRL((p.quantity || p.qty) * p.value)]),
+    ...services.map((s: any) => [safeText(s.description), "Mão de Obra", safeText(s.qty || 1), formatBRL(s.value), formatBRL((s.qty || 1) * s.value)]),
   ]
 
   try {
